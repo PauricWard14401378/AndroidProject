@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PracticalAndroidProgrammingProject</string>
+    <string name="button1">Run</string>
+    <string name="button2">Size</string>
+    <string name="button3">Weights</string>
+    <string name="button4">Cans</string>
 </resources>
