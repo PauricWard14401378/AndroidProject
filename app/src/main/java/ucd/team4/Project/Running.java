@@ -2,9 +2,12 @@ package ucd.team4.Project;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -27,10 +30,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class Running extends FragmentActivity implements OnMapReadyCallback {
+public class Running extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_GET_LOCATION = 1;
     private GoogleMap mMap;
+    private LocationManager locationManager;
     private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
@@ -44,9 +48,45 @@ public class Running extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createLocationRequest();
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_GET_LOCATION);
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
 
     }
 
+    public  void onLocationChanged(Location location){
+        Toast.makeText(this, "Permission (already) Granted1!", Toast.LENGTH_SHORT).show();
+        LatLng coord=new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.clear();
+        mMap.addMarker(new MarkerOptions().position(coord).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(coord));
+
+    }
+    public  void onStatusChanged(String provider, int status, Bundle extras){
+
+    }
+    @Override
+    public  void onProviderEnabled(String s){
+
+    }
+    @Override
+    public  void onProviderDisabled(String s){
+
+    }
     protected void createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
@@ -112,7 +152,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback {
                             double lon = location.getLongitude();
                             LatLng latLng = new LatLng(lat,lon);
                             mMap.addMarker(new MarkerOptions().position(latLng).title("You are here"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,20.0f));
                         }
                         else{
                             LatLng latLng = new LatLng(54.653,-8.156);

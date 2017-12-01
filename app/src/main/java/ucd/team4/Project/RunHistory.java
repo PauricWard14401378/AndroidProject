@@ -2,6 +2,7 @@ package ucd.team4.Project;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -75,8 +76,58 @@ public class RunHistory extends Fragment {
         values.put("calories", 400);
         values.put("steps", 1000);
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        long done=MainActivity.db2.insert("runHistory", null, values);
-        System.out.println("done"+done);
+//        System.out.println("done"+MainActivity.dbWritable);
+//        long done=MainActivity.dbWritable.insert("runHistory", null, values);
+
+        String[] projection={
+                "id",
+                "date",
+                "time",
+                "distance",
+                "calories",
+                "steps"
+        };
+        Cursor c= MainActivity.dbReadable.query(
+                "runHistory",
+                projection,
+                "calories = 400",
+                null,
+                null,
+                null,
+                null
+        );
+        String[] runHistory=new String[7];
+        if(c!=null){
+
+            c.moveToFirst();
+            int index=Integer.parseInt(c.getString(0))-1;
+            String date=c.getString(1);
+            String time=c.getString(2);
+            String distance=c.getString(3);
+            String calories=c.getString(4);
+            String steps=c.getString(5);
+
+
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+            System.out.println("helpingman"+runHistory.length);
+
+//            while (c.moveToNext()) {
+//                index=Integer.parseInt(c.getString(0))-1;
+//                runHistory[index]= "Date: "+c.getString(1);
+//                runHistory[index]+="\nTime: "+c.getString(2);
+//                runHistory[index]+="\nDistance: "+c.getString(3);
+//                runHistory[index]+="\nCalories: "+c.getString(4);
+//                runHistory[index]+="\nSteps: "+c.getString(5);
+//            }
+        }
+
+
         String[] forecastArray = {
                 "Mon 6/23 - Sunny - bcvbxcvb31/17",
                 "Tue 6/24 - Foggy - 21/8",
@@ -86,8 +137,10 @@ public class RunHistory extends Fragment {
                 "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
                 "Sun 6/29 - Sunny - 20/7"
         };
+
         List<String> weekForecast = new ArrayList<String>(
-                Arrays.asList(forecastArray));
+                Arrays.asList(runHistory));
+        System.out.println("tttttt"+runHistory[0]);
 
 
         mForecastAdapter =
