@@ -1,3 +1,9 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -5,4 +11,14 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ucd.team4.Project.Running" />
+    tools:context="ucd.team4.Project.Running"
+/>
+    <Button
+    android:id="@+id/button5"
+    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_margin="40dp"
+    android:text="START WORKOUT"
+    android:padding="40dp"
+    />
+</LinearLayout>
