@@ -14,14 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:label="Welcome to Runr">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RunHistoryActivity">
+        <activity android:name=".RunHistoryActivity" android:label="Run History">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -43,14 +43,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".onSensorChange">
+        <activity android:name=".onSensorChange" android:label="Pedometer">
             <intent-filter>
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserProfile">
+        <activity android:name=".UserProfile" android:label="User Profile">
             <intent-filter>
                 <!--<action android:name="android.intent.action.MAIN" />-->
 

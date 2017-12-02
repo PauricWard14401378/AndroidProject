@@ -77,7 +77,7 @@ public class RunHistory extends Fragment {
         values.put("steps", 1000);
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
 //        System.out.println("done"+MainActivity.dbWritable);
-//        long done=MainActivity.dbWritable.insert("runHistory", null, values);
+        long done=MainActivity.dbWritable.insert("runHistory", null, values);
 
         String[] projection={
                 "id",

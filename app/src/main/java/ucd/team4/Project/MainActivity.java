@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         db = new SQLite_Database(getApplicationContext());
+
         if (!prefs.getBoolean("Time", false)) {
 
 
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("here3");
             dbWritable=MainActivity.db.getWritableDatabase();
             dbReadable=MainActivity.db.getReadableDatabase();
+            db.onUpgrade(dbWritable, 0,1);
             return "";
         }
         protected  void onProgressUpdate(){

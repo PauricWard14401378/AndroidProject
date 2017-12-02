@@ -24,12 +24,22 @@ public class SQLite_Database extends SQLiteOpenHelper {
                 "distance INTEGER, "+
                 "calories INTEGER, "+
                 "steps INTEGER)";
+        String CREATE_USER_TABLE = "CREATE TABLE userProfile ( " +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT, " +
+                "gender TEXT," +
+                "dob TEXT, " +
+                "height TEXT, "+
+                "weight TEXT, "+
+                "bmi TEXT)";
 
         // create books table
         db.execSQL(CREATE_RUN_TABLE);
+        db.execSQL(CREATE_USER_TABLE);
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         db.execSQL("DROP TABLE IF EXISTS " + "runHistory");
+        db.execSQL("DROP TABLE IF EXISTS " + "userProfile");
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion){
