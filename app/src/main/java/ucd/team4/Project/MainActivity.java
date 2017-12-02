@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonFour = (Button) findViewById(R.id.button4);
         buttonFour.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                launchActivityRun(v);
+                launchActivityUserProfile(v);
             }
         });
 
@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
     }
     public void launchActivityPedometer(View v) {
         Intent intent = new Intent(this, onSensorChange.class);
+        startActivity(intent);
+    }
+    public void launchActivityUserProfile(View v) {
+        Intent intent = new Intent(this, UserProfile.class);
         startActivity(intent);
     }
     public static class CreateDatabaseTask extends AsyncTask<String, Void, String> {

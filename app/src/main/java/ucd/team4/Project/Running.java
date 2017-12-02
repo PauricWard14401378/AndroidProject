@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,8 +28,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+
+
 
 public class Running extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -36,12 +43,18 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
     private GoogleMap mMap;
     private LocationManager locationManager;
     private FusedLocationProviderClient mFusedLocationClient;
+    private ArrayList<LatLng> points; //added
+    Polyline line; //added
+    private boolean WORKOUT_STARTED=true;
+    private LatLng origin;
+    private LatLng destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("onCreate", "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_running);
+        points = new ArrayList<LatLng>();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -62,18 +75,41 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                     MY_PERMISSIONS_REQUEST_GET_LOCATION);
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
 
 
     }
+//    private void getRoute(){
+//        DateTime now = new DateTime();
+//        DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
+//                .mode(TravelMode.DRIVING).origin()
+//                .destination(destination).departureTime(now)
+//                        .await();
+//    }
+//    private GeoApiContext getGeoContext(){
+//        GeoApiContext geoApiContext = new GeoApiContext();
+//        return geoApiContext.setQueryRateLimit(3).setApiKey(getString(R.string.google_maps_key2)).setConnectTimeout(1, TimeUnit.SECONDS).setReadTimeout(1, TimeUnit.SECONDS).setWriteTimeout(1, TimeUnit.SECONDS);
+//    }
 
     public  void onLocationChanged(Location location){
         Toast.makeText(this, "Permission (already) Granted1!", Toast.LENGTH_SHORT).show();
         LatLng coord=new LatLng(location.getLatitude(), location.getLongitude());
+        if(WORKOUT_STARTED){
+            points.add(coord);
+        }
         mMap.clear();
+        //boolean isOnRoute = PolyUtil.isLocationOnPath(coord, points, false, 10.0f);
+        //if(isOnRoute){
+        PolylineOptions options = new PolylineOptions().width(20).color(Color.BLUE).geodesic(true);
+        for (int i = 0; i < points.size(); i++) {
+            LatLng point = points.get(i);
+            options.add(point);
+        }
         mMap.addMarker(new MarkerOptions().position(coord).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coord));
+        line = mMap.addPolyline(options);
 
     }
     public  void onStatusChanged(String provider, int status, Bundle extras){
