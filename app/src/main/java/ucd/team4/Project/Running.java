@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,12 +17,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,6 +69,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
     private SensorManager sensorManager;
     private Sensor accel;
     private final String TEXT_NUM_STEPS = "Number of Steps: ";
+    private Chronometer timer;
     public int numSteps;
 
     @Override
@@ -73,36 +78,20 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         super.onCreate(savedInstanceState);
         if(isAppInstalled("com.spotify.music")) {
             setContentView(R.layout.activity_running_with_spotify);
-            Button buttonOne = (Button) findViewById(R.id.play);
+            Button buttonOne = (Button) findViewById(R.id.pause);
             buttonOne.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
-                    //Intent intent = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
-                    if(isAppInstalled("com.spotify.music")) {
-                        Intent intent=new Intent("com.spotify.mobile.android.ui.widget.PLAY");
-                        intent.setPackage("com.spotify.music");
-                        sendBroadcast(intent);
-//                    System.out.println("lizards");
-//                    intent.setData(Uri.parse("spotify:user:spotify:playlist:37i9dQZF1DX1gcrZ1xC96D"));
-                    }else{
-                        Intent intent=new Intent("com.spotify.mobile.android.ui.widget.NEXT");
-                        intent.setPackage("com.spotify.music");
-                        sendBroadcast(intent);
-//                    intent.setData(Uri.parse("market://details?id=com.spotify.music&hl=en"));
-                    }
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(intent);
+                    Intent intent=new Intent("com.spotify.mobile.android.ui.widget.PLAY");
+                    intent.setPackage("com.spotify.music");
+                    sendBroadcast(intent);
                 }
             });
             Button buttonTwo = (Button) findViewById(R.id.next);
             buttonTwo.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
-
-                }
-            });
-            Button buttonThree = (Button) findViewById(R.id.previous);
-            buttonThree.setOnClickListener(new Button.OnClickListener() {
-                public void onClick(View v) {
-
+                    Intent intent=new Intent("com.spotify.mobile.android.ui.widget.NEXT");
+                    intent.setPackage("com.spotify.music");
+                    sendBroadcast(intent);
                 }
             });
         }else{
@@ -125,8 +114,25 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
             return;
         }
 
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setPositiveButton("okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"okay",Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("See previous runs", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"runs",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
+        timer = (Chronometer) findViewById(R.id.chronometer2);
 
         distanceTravelled = (TextView) findViewById(R.id.distanceTravelled);
         workoutStarted = (Button) findViewById(R.id.button1);
@@ -136,19 +142,78 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                 if(WORKOUT_STARTED){
                     RunHistory.noHistory=false;
                     WORKOUT_STARTED=false;
+                    workoutStarted.setText("Start Workout");
+                    //TODO: add run to database
+                    //TODO: print stats, have link to all runs
+                    timer.stop();
+                    int elapsedMillis = (int) (SystemClock.elapsedRealtime() - timer.getBase());
+                    int elapsedSecs = (elapsedMillis/1000);
+                    int elapsedMins = (elapsedSecs/60);
+                    int elapsedHours = (elapsedMins/60);
+                    String time = String.format("%02d", elapsedHours) + ":"
+                            + String.format("%02d", (elapsedMins%60)) + ":"
+                            + String.format("%02d", (elapsedSecs%60));
+                    double doubleTime= elapsedMins; //not miod 60 incase run is more than an hour
+                    doubleTime+= (elapsedSecs%60)/60.0; //adds seconds as a decimal point. eg 90 secs will be 1.5 mins
+                    Toast.makeText(getApplicationContext(),"time "+time,Toast.LENGTH_SHORT).show();
+
+
+                    alertDialogBuilder.setMessage("Workout Finished\n\nDistance : \t\t\t"+String.format("%.2f", totalDistance)+" Km\nTime : \t\t\t"+time);
+
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                     stopPedometer();
                     ContentValues values= new ContentValues();
-                    Calendar c = Calendar.getInstance();
+                    Calendar calendar = Calendar.getInstance();
                     SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
-                    String time=Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE;
-                    String formattedDate = df.format(c.getTime());
-                    System.out.println("datered"+formattedDate);
+                    String timeNow=Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE;
+                    String formattedDate = df.format(calendar.getTime());
+                    String calories="";
+
+                    String[] projection = {
+                            "id",
+                            "name",
+                            "gender",
+                            "dob",
+                            "height",
+                            "weight",
+                            "bmi"
+                    };
+                    Cursor c = MainActivity.dbReadable.query(
+                            "userProfile",
+                            projection,
+                            "id = 1",
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    if (c.moveToFirst()) {
+                        System.out.println(c.getString(3).substring(6,10));
+                        int age=Calendar.getInstance().get(Calendar.YEAR)-Integer.parseInt(c.getString(3).substring(6,10));
+                        System.out.println("yayaya"+age);
+                        //double t=Double.parseDouble(time));
+                        System.out.println("double"+doubleTime);
+                        calories=String.valueOf(caloriesBurned(
+                                c.getString(2),
+                                age,
+                                Integer.parseInt(c.getString(4)),
+                                Integer.parseInt(c.getString(5)),
+                                doubleTime, totalDistance));
+                    }
+
+
+
+
+                    DecimalFormat format = new DecimalFormat("#.##");
 
                     values.put("date", formattedDate);
-                    values.put("time", time);
-                    values.put("distance", totalDistance);
-                    values.put("calories", 400);
-                    values.put("steps", 1000);
+                    values.put("time", timeNow);
+                    values.put("distance", format.format(totalDistance));
+                    values.put("calories", calories);
+                    values.put("steps", numSteps);
+                    values.put("duration", String.valueOf(time));
                     long done=MainActivity.dbWritable.insert("runHistory", null, values);
                     System.out.println("datered"+done);
 
@@ -156,6 +221,11 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                 }
                 else{
                     WORKOUT_STARTED=true;
+                    workoutStarted.setText("Stop workout");
+                    distanceTravelled.setText(String.format("%.2f", totalDistance)+" Km");
+                    timer.setBase(SystemClock.elapsedRealtime());
+                    timer.start();
+                    timer.setFormat("Time - %s");
                     startPedometer();
                     workoutStarted.setText("Stop workout");
                 }
@@ -195,7 +265,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
             mMap.clear();
             //boolean isOnRoute = PolyUtil.isLocationOnPath(coord, points, false, 10.0f);
             //if(isOnRoute){
-            PolylineOptions options = new PolylineOptions().width(20).color(Color.BLUE).geodesic(true);
+            PolylineOptions options = new PolylineOptions().width(40).color(Color.BLUE).geodesic(true);
             for (int i = 0; i < points.size(); i++) {
                 LatLng point = points.get(i);
                 options.add(point);
@@ -207,7 +277,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                 Toast.makeText(getApplicationContext(), "distance changed " + distance, Toast.LENGTH_SHORT).show();
                 totalDistance += distance;
                 Toast.makeText(getApplicationContext(), "Total Distance " + totalDistance, Toast.LENGTH_SHORT).show();
-                distanceTravelled.setText("travelled " + totalDistance);
+                distanceTravelled.setText(String.format("%.2f", totalDistance)+" Km");
             }
 
             mMap.addMarker(new MarkerOptions().position(coord).title("Marker in Sydney"));
@@ -397,6 +467,39 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
             simpleStepDetector.updateAccel(
                     event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
+    }
+    public static double caloriesBurned(String sex, int age, int height, int weight, double minutes, double distance) {
+        double RMR;
+        double MET = 2;
+        double mph = distance / minutes / 1.60934 * 60;
+        if(mph>2 && mph <=4)
+            MET = 4;
+        else if(mph <= 4.5)
+            MET = 7;
+        else if(mph <= 5.0)
+            MET = 8.3;
+        else if(mph <= 5.5)
+            MET = 9;
+        else if(mph <= 6.0)
+            MET = 9.8;
+        else if(mph <= 7)
+            MET = 11.0;
+        else if(mph <= 8)
+        MET = 11.8;
+        else if(mph <= 9)
+            MET = 12.8;
+        else if(mph <= 10)
+            MET = 14.5;
+        else
+            MET = 16;
+        if (sex == "male") {
+            RMR = 88.362 + 4.799 * height + 13.397 * weight - 5.677 * age;
+        } else {
+            RMR = 477.593 + 3.098 * height + 9.247 * weight - 4.6756 * age;
+        }
+        double corrected_MET = MET * (3.5 / (1000 * (RMR / (1440 * 5))));
+        double calories_burned = 1000 * (RMR / (1440 * 5))/corrected_MET;
+        return (calories_burned * minutes / 144);
     }
 
 

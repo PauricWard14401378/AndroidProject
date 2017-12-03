@@ -21,9 +21,10 @@ public class SQLite_Database extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "date TEXT, " +
                 "time TEXT, " +
-                "distance INTEGER, "+
+                "distance DOUBLE, "+
                 "calories INTEGER, "+
-                "steps INTEGER)";
+                "steps INTEGER, "+
+                "duration DOUBLE)";
         String CREATE_USER_TABLE = "CREATE TABLE userProfile ( " +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, " +

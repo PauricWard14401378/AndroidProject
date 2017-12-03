@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
 
     android:id="@+id/fragment"
+    android:tag="fragment"
     android:name="ucd.team4.Project.RunHistory"
     tools:layout="@layout/run_history_layout"
     android:layout_width="match_parent"

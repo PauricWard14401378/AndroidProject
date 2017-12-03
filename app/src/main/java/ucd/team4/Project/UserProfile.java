@@ -23,26 +23,23 @@ import java.util.Calendar;
 
 public class UserProfile extends AppCompatActivity {
     public TextView BMI;
+    public static String gender="male";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         final Calendar myCalendar = Calendar.getInstance();
         final EditText name= (EditText) findViewById(R.id.name);
-        final String gender;
+
         final RadioButton genderF= (RadioButton) findViewById(R.id.radioF);
         final RadioButton genderM= (RadioButton) findViewById(R.id.radioM);
-        if(genderF.isChecked()){
-            gender="female";
-        }else{
-            gender="male";
-        }
         final EditText dob= (EditText) findViewById(R.id.dob);
         final EditText weight= (EditText) findViewById(R.id.weight);
         final EditText height= (EditText) findViewById(R.id.height);
         BMI=(TextView) findViewById(R.id.bmi_calculator);
-        retrieveUserProfile(name, gender, dob, height, weight);
+        retrieveUserProfile(name, dob, height, weight);
         if(gender.equals("male")){
+            System.out.println("hahaha"+gender);
             genderM.setChecked(true);
         }else{
             genderF.setChecked(true);
@@ -114,6 +111,12 @@ public class UserProfile extends AppCompatActivity {
         Button save = (Button) findViewById(R.id.send);
         save.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                if(genderM.isChecked()){
+                    gender="male";
+                }else{
+                    gender="female";
+                }
+
                 saveUserProfile(name, gender, dob, height, weight);
             }
         });
@@ -128,7 +131,7 @@ public class UserProfile extends AppCompatActivity {
         values.put("height", height.getText().toString());
         values.put("weight", weight.getText().toString());
         values.put("bmi", BMI.getText().toString());
-        MainActivity.dbWritable.insert("userProfile", null, values);
+        MainActivity.dbWritable.replace("userProfile", null, values);
         System.out.println(BMI.getText().toString());
         Toast.makeText(this, "Changes Saved!", Toast.LENGTH_SHORT).show();
     }
@@ -151,7 +154,7 @@ public class UserProfile extends AppCompatActivity {
 
     }
 
-    public void retrieveUserProfile(EditText name, String gender, EditText dob, EditText height, EditText weight) {
+    public void retrieveUserProfile(EditText name, EditText dob, EditText height, EditText weight) {
         String[] projection = {
                 "id",
                 "name",
@@ -171,10 +174,10 @@ public class UserProfile extends AppCompatActivity {
                 null
         );
         if (c.moveToFirst()) {
-//            c.moveToFirst();
             String index=c.getString(0);
             name.setText(c.getString(1));
             gender = c.getString(2);
+            System.out.println("hahahaha"+gender);
             dob.setText(c.getString(3));
             height.setText(c.getString(4));
             weight.setText(c.getString(5));

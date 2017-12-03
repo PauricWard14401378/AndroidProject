@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity" android:label="Welcome to Runr">
+        <activity android:name=".MainActivity" android:label="Runr">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,6 +32,8 @@
             android:value="@string/google_maps_key" />
         <activity
             android:name=".Running"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden">
             android:label="@string/title_activity_running">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />

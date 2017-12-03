@@ -16,34 +16,23 @@
         android:layout_marginBottom="68dp"
         tools:context="ucd.team4.Project.Running" />
 
-    <ToggleButton
-        android:id="@+id/play"
+    <Button
+        android:id="@+id/pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/button1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:onClick="onToggleClicked"
-        android:textOff="Play"
-        android:textOn="Pause" />
-
-    <Button
-        android:id="@+id/previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/play"
-        android:layout_alignBottom="@+id/play"
-        android:layout_toStartOf="@+id/play"
-        android:text="Previous" />
+        android:layout_alignEnd="@+id/button1"
+        android:layout_marginBottom="6dp"
+        android:text="Pause" />
 
     <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/play"
-        android:layout_alignBottom="@+id/play"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/play"
+        android:layout_alignBaseline="@+id/pause"
+        android:layout_alignBottom="@+id/pause"
+        android:layout_alignStart="@+id/distanceTravelled"
+        android:layout_marginStart="26dp"
         android:text="Next" />
     <Button
         android:id="@+id/button1"
@@ -66,5 +55,11 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name" />
+    <Chronometer
+        android:id="@+id/chronometer2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/distanceTravelled"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

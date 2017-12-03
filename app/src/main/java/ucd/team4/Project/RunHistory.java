@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -33,28 +36,30 @@ public class RunHistory extends Fragment {
 
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        // Inflate the menu items for use in the action bar
-//        inflater.inflate(R.menu.forecastfragment, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        if (id == R.id.action_refresh) {
-//            FetchWeatherTask weatherTask = new FetchWeatherTask();
-//            weatherTask.execute("7778677");
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//
-//    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        inflater.inflate(R.menu.run_history, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.clear_history) {
+            MainActivity.db.onUpgrade(MainActivity.dbWritable, 0, 1);
+            noHistory=true;
+            Intent intent = new Intent(getActivity(), RunHistoryActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,38 +67,24 @@ public class RunHistory extends Fragment {
 
         View rootView = inflater.inflate(R.layout.run_history_layout, container, false);
 
-
-
-        //System.out.println("here2"+yea);
-//        ContentValues values= new ContentValues();
-//
-//        values.put("date", "08/04/2017");
-//        values.put("time", "19:05");
-//        values.put("distance", 3);
-//        values.put("calories", 400);
-//        values.put("steps", 1000);
-//        // Create some dummy data for the ListView.  Here's a sample weekly forecast
-////        System.out.println("done"+MainActivity.dbWritable);
-//        long done=MainActivity.dbWritable.insert("runHistory", null, values);
-
         String[] projection={
                 "id",
                 "date",
                 "time",
                 "distance",
                 "calories",
-                "steps"
+                "steps",
+                "duration"
         };
         Cursor c= MainActivity.dbReadable.query(
                 "runHistory",
                 projection,
-                "calories = 400",
+                null,
                 null,
                 null,
                 null,
                 null
         );
-        //String[] runHistory=new String[2];
         ArrayList<String> runHistory=new ArrayList<String>();
         if(c.getCount()!=0){
             c.moveToFirst();
@@ -103,17 +94,8 @@ public class RunHistory extends Fragment {
             String distance=c.getString(3);
             String calories=c.getString(4);
             String steps=c.getString(5);
-
-
-            runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps);
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-//            System.out.println("helpingman"+runHistory.length);
-
+            String duration= c.getString(6);
+            runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps+" Duration: "+duration);
             while (c.moveToNext()) {
                 index=Integer.parseInt(c.getString(0))-1;
                 date=c.getString(1);
@@ -121,23 +103,10 @@ public class RunHistory extends Fragment {
                 distance=c.getString(3);
                 calories=c.getString(4);
                 steps=c.getString(5);
-                runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps);
+                duration= c.getString(6);
+                runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps+" Duration: "+duration);
             }
         }
-
-        String[] forecastArray = {
-                "Mon 6/23 - Sunny - bcvbxcvb31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-
-//        List<String> weekForecast = new ArrayList<String>(
-//                Arrays.asList(runHistory));
-//        System.out.println("tttttt"+runHistory[0]);
 
 
         mForecastAdapter =

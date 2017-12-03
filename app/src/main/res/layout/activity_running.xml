@@ -37,5 +37,11 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name" />
+    <Chronometer
+        android:id="@+id/chronometer2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/distanceTravelled"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

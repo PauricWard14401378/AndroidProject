@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("here3");
             dbWritable=MainActivity.db.getWritableDatabase();
             dbReadable=MainActivity.db.getReadableDatabase();
-            db.onUpgrade(dbWritable, 0,1);
+           // db.onUpgrade(dbWritable, 0,1);
             return "";
         }
         protected  void onProgressUpdate(){
