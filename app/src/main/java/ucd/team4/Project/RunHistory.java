@@ -1,6 +1,5 @@
 package ucd.team4.Project;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by pauric on 30/11/2017.
@@ -68,16 +65,16 @@ public class RunHistory extends Fragment {
 
 
         System.out.println("here2"+yea);
-        ContentValues values= new ContentValues();
-        values.put("id", 1);
-        values.put("date", "08/04/2017");
-        values.put("time", "19:05");
-        values.put("distance", 3);
-        values.put("calories", 400);
-        values.put("steps", 1000);
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
-//        System.out.println("done"+MainActivity.dbWritable);
-        long done=MainActivity.dbWritable.insert("runHistory", null, values);
+//        ContentValues values= new ContentValues();
+//
+//        values.put("date", "08/04/2017");
+//        values.put("time", "19:05");
+//        values.put("distance", 3);
+//        values.put("calories", 400);
+//        values.put("steps", 1000);
+//        // Create some dummy data for the ListView.  Here's a sample weekly forecast
+////        System.out.println("done"+MainActivity.dbWritable);
+//        long done=MainActivity.dbWritable.insert("runHistory", null, values);
 
         String[] projection={
                 "id",
@@ -96,9 +93,11 @@ public class RunHistory extends Fragment {
                 null,
                 null
         );
-        String[] runHistory=new String[7];
-        if(c!=null){
+        //String[] runHistory=new String[2];
+        ArrayList<String> runHistory=new ArrayList<String>();
+        if(c.getCount()!=0){
 
+            //TextView noHistory=(TextView) findViewById(R.id.noHistory);
             c.moveToFirst();
             int index=Integer.parseInt(c.getString(0))-1;
             String date=c.getString(1);
@@ -108,25 +107,25 @@ public class RunHistory extends Fragment {
             String steps=c.getString(5);
 
 
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
-            System.out.println("helpingman"+runHistory.length);
+            runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps);
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            runHistory[index++]= "Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps;
+//            System.out.println("helpingman"+runHistory.length);
 
-//            while (c.moveToNext()) {
-//                index=Integer.parseInt(c.getString(0))-1;
-//                runHistory[index]= "Date: "+c.getString(1);
-//                runHistory[index]+="\nTime: "+c.getString(2);
-//                runHistory[index]+="\nDistance: "+c.getString(3);
-//                runHistory[index]+="\nCalories: "+c.getString(4);
-//                runHistory[index]+="\nSteps: "+c.getString(5);
-//            }
+            while (c.moveToNext()) {
+                index=Integer.parseInt(c.getString(0))-1;
+                date=c.getString(1);
+                time=c.getString(2);
+                distance=c.getString(3);
+                calories=c.getString(4);
+                steps=c.getString(5);
+                runHistory.add("Date: "+date+" Time: "+time+" Distance: "+distance+" Calories: "+calories+" Steps: "+steps);
+            }
         }
-
 
         String[] forecastArray = {
                 "Mon 6/23 - Sunny - bcvbxcvb31/17",
@@ -138,9 +137,9 @@ public class RunHistory extends Fragment {
                 "Sun 6/29 - Sunny - 20/7"
         };
 
-        List<String> weekForecast = new ArrayList<String>(
-                Arrays.asList(runHistory));
-        System.out.println("tttttt"+runHistory[0]);
+//        List<String> weekForecast = new ArrayList<String>(
+//                Arrays.asList(runHistory));
+//        System.out.println("tttttt"+runHistory[0]);
 
 
         mForecastAdapter =
@@ -148,7 +147,7 @@ public class RunHistory extends Fragment {
                         getActivity(), // The current context (this activity)
                         R.layout.list_item_run_history, // The name of the layout ID.
                         R.id.list_item_run_history, // The ID of the textview to populate.
-                        weekForecast);
+                        runHistory);
 
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_runHistory);

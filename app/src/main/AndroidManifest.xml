@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ucd.team4.Project">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COURSE_LOCATION" />
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
     <uses-feature
         android:name="android.hardware.sensor.stepcounter"
@@ -57,6 +58,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".LocationService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="LocationTracker">
+            <intent-filter>
+                <action android:name="ucd.team4.Project.LOCATIONSERVICE" />
+            </intent-filter>
+        </service>
 
     </application>
 

@@ -1,80 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="ucd.team4.Project.MainActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Well lads do ya wanna run somewhere then press one of the buttons for the craic (Y)"
-        android:layout_marginBottom="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/button1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="820dp"
-        android:layout_marginLeft="20dp"
-        android:padding="40dp"
-        android:text="@string/button1"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintLeft_toLeftOf="parent" />
-    <Button
-        android:id="@+id/button2"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_margin="20dp"
-        android:text="@string/button2"
-        android:padding="40dp"
-        tools:layout_editor_absoluteY="182dp"
-        tools:layout_editor_absoluteX="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-    <Button
-        android:id="@+id/button3"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_margin="20dp"
-        android:text="@string/button3"
-        android:padding="40dp"
-        tools:layout_editor_absoluteY="290dp"
-        tools:layout_editor_absoluteX="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/button4"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-    <Button
-        android:id="@+id/button4"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_margin="20dp"
-        android:text="@string/button4"
-        android:padding="40dp"
-        tools:layout_editor_absoluteY="422dp"
-        tools:layout_editor_absoluteX="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/button1"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-    <!--<Button-->
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="ucd.team4.Project.MainActivity">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Well lads do ya wanna run somewhere then press one of the buttons for the craic 󰀀"
+            android:layout_marginBottom="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/button1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button1"
+            android:background="@drawable/round_button"
+
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_marginBottom="820dp"
+            android:layout_marginLeft="20dp"
+            android:padding="40dp"
+            android:text="@string/button1"
+            app:layout_constraintBottom_toTopOf="@+id/button2"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+
+        <Button
+            android:id="@+id/button2"
+            android:background="@drawable/round_button"
+
+            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_margin="20dp"
+            android:text="@string/button2"
+            android:padding="40dp"
+            tools:layout_editor_absoluteY="182dp"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/button3"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <Button
+            android:id="@+id/button3"
+            android:background="@drawable/round_button"
+
+            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_margin="20dp"
+            android:text="@string/button3"
+            android:padding="40dp"
+            tools:layout_editor_absoluteY="290dp"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/button4"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <Button
+            android:id="@+id/button4"
+            android:background="@drawable/round_button"
+            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_margin="20dp"
+            android:text="@string/button4"
+            android:padding="40dp"
+            tools:layout_editor_absoluteY="422dp"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/button1"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <!--<Button-->
         <!--android:id="@+id/button_id2"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_width="fill_parent"-->
         <!--android:text="self_destruct2" />-->
-    <!--<Button-->
+        <!--<Button-->
         <!--android:id="@+id/button_id3"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_width="fill_parent"-->
         <!--android:text="self_destruct" />-->
-    <!--<Button-->
+        <!--<Button-->
         <!--android:id="@+id/button_id4"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_width="fill_parent"-->
         <!--android:text="self_destruct" />-->
 
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

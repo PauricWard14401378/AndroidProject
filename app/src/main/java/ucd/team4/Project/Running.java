@@ -2,10 +2,15 @@ package ucd.team4.Project;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +19,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,21 +41,30 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
-
-public class Running extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class Running extends FragmentActivity implements OnMapReadyCallback, LocationListener,SensorEventListener, StepListener {
 
     private static final int MY_PERMISSIONS_REQUEST_GET_LOCATION = 1;
-    private GoogleMap mMap;
-    private LocationManager locationManager;
+    public static GoogleMap mMap;
+    public static LocationManager locationManager;
     private FusedLocationProviderClient mFusedLocationClient;
-    private ArrayList<LatLng> points; //added
-    Polyline line; //added
-    private boolean WORKOUT_STARTED=true;
+    public static ArrayList<LatLng> points; //added
+    public static Polyline line; //added
+    public static boolean WORKOUT_STARTED=false;
+    private TextView workoutStarted;
     private LatLng origin;
     private LatLng destination;
+    public static double totalDistance = 0;
+    public static TextView distanceTravelled;
+    private StepDetector simpleStepDetector;
+    private SensorManager sensorManager;
+    private Sensor accel;
+    private final String TEXT_NUM_STEPS = "Number of Steps: ";
+    public int numSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,15 +78,8 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         mapFragment.getMapAsync(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createLocationRequest();
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_GET_LOCATION);
@@ -79,6 +89,38 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
 
+        distanceTravelled = (TextView) findViewById(R.id.distanceTravelled);
+        workoutStarted = (Button) findViewById(R.id.button1);
+        workoutStarted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(WORKOUT_STARTED){
+                    WORKOUT_STARTED=false; stopPedometer();
+                    ContentValues values= new ContentValues();
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+                    String time=Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE;
+                    String formattedDate = df.format(c.getTime());
+                    System.out.println("datered"+formattedDate);
+
+                    values.put("date", formattedDate);
+                    values.put("time", time);
+                    values.put("distance", totalDistance);
+                    values.put("calories", 400);
+                    values.put("steps", 1000);
+                    long done=MainActivity.dbWritable.insert("runHistory", null, values);
+                    System.out.println("datered"+done);
+
+                    workoutStarted.setText("Start Workout");
+                }
+                else{
+                    WORKOUT_STARTED=true;
+                    startPedometer();
+                    workoutStarted.setText("Stop workout");
+                }
+
+            }
+        });
 
     }
 //    private void getRoute(){
@@ -94,24 +136,53 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
 //    }
 
     public  void onLocationChanged(Location location){
-        Toast.makeText(this, "Permission (already) Granted1!", Toast.LENGTH_SHORT).show();
-        LatLng coord=new LatLng(location.getLatitude(), location.getLongitude());
-        if(WORKOUT_STARTED){
-            points.add(coord);
-        }
-        mMap.clear();
-        //boolean isOnRoute = PolyUtil.isLocationOnPath(coord, points, false, 10.0f);
-        //if(isOnRoute){
-        PolylineOptions options = new PolylineOptions().width(20).color(Color.BLUE).geodesic(true);
-        for (int i = 0; i < points.size(); i++) {
-            LatLng point = points.get(i);
-            options.add(point);
-        }
-        mMap.addMarker(new MarkerOptions().position(coord).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(coord));
-        line = mMap.addPolyline(options);
+        if(WORKOUT_STARTED) {
+            Toast.makeText(this, "Permission (already) Granted1!", Toast.LENGTH_SHORT).show();
+            LatLng coord = new LatLng(location.getLatitude(), location.getLongitude());
 
+            points.add(coord);
+
+            mMap.clear();
+            //boolean isOnRoute = PolyUtil.isLocationOnPath(coord, points, false, 10.0f);
+            //if(isOnRoute){
+            PolylineOptions options = new PolylineOptions().width(20).color(Color.BLUE).geodesic(true);
+            for (int i = 0; i < points.size(); i++) {
+                LatLng point = points.get(i);
+                options.add(point);
+            }
+            int lastPoint = points.size() - 1;
+            int penulPoint = points.size() - 2;
+            if (points.size() > 1) {
+                double distance = GetDistanceFromLatLonInKm(points.get(lastPoint).latitude, points.get(lastPoint).longitude, points.get(penulPoint).latitude, points.get(penulPoint).longitude);
+                Toast.makeText(getApplicationContext(), "distance changed " + distance, Toast.LENGTH_SHORT).show();
+                totalDistance += distance;
+                Toast.makeText(getApplicationContext(), "Total Distance " + totalDistance, Toast.LENGTH_SHORT).show();
+                distanceTravelled.setText("travelled " + totalDistance);
+            }
+
+            mMap.addMarker(new MarkerOptions().position(coord).title("Marker in Sydney"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(coord));
+            line = mMap.addPolyline(options);
+        }
     }
+
+    public static double GetDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371;
+        // Radius of the earth in km
+        double dLat = deg2rad(lat2 - lat1);
+        // deg2rad below
+        double dLon = deg2rad(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = R * c;
+        // Distance in km
+        return d;
+    }
+
+    private static double deg2rad(double deg) {
+        return deg * (Math.PI / 180);
+    }
+
     public  void onStatusChanged(String provider, int status, Bundle extras){
 
     }
@@ -188,7 +259,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                             double lon = location.getLongitude();
                             LatLng latLng = new LatLng(lat,lon);
                             mMap.addMarker(new MarkerOptions().position(latLng).title("You are here"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,20.0f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,10.0f));
                         }
                         else{
                             LatLng latLng = new LatLng(54.653,-8.156);
@@ -250,29 +321,34 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         ActivityCompat.requestPermissions(this,
                 new String[]{permissionName}, permissionRequestCode);
     }
+    public void startPedometer(){
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        simpleStepDetector = new StepDetector();
+        simpleStepDetector.registerListener(this);
+        numSteps = 0;
+        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode,
-//                                           String permissions[], int[] grantResults) {
-//        switch (requestCode) {
-//            case MY_PERMISSIONS_REQUEST_GET_LOCATION: {
-//                // If request is cancelled, the result arrays are empty.
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//
-//                    // permission was granted, yay! Do the
-//                    // contacts-related task you need to do.
-//
-//                } else {
-//
-//                    // permission denied, boo! Disable the
-//                    // functionality that depends on this permission.
-//                }
-//                return;
-//            }
-//
-//            // other 'case' lines to check for other
-//            // permissions this app might request
-//        }
-//    }
+    }
+    public void stopPedometer(){
+        sensorManager.unregisterListener(this);
+    }
+    @Override
+    public void step(long timeNs) {
+        numSteps++;
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            simpleStepDetector.updateAccel(
+                    event.timestamp, event.values[0], event.values[1], event.values[2]);
+        }
+    }
+
+
+
 }

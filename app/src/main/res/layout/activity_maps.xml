@@ -9,24 +9,28 @@
 
     <TextView
         android:id="@+id/tv_steps"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        />
+        android:layout_width="200dp"
+        android:textSize="20sp"
+        android:background="@drawable/circle_button"
+        android:layout_marginBottom="150dp"
+        android:layout_height="200dp"
+        android:clickable="false"
+        android:gravity="center" />
 
 
     <Button
         android:id="@+id/btn_start"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Start Pedometer"
-        />
+        android:background="@drawable/round_button"
+        android:text="Start Pedometer" />
 
     <Button
         android:id="@+id/btn_stop"
-        android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Stop Pedometer"
-        />
+        android:background="@drawable/round_button"
+        android:text="Stop Pedometer" />
 
 </LinearLayout>
