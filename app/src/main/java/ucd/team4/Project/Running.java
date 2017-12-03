@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -70,7 +71,45 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("onCreate", "onCreate: ");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_running);
+        if(isAppInstalled("com.spotify.music")) {
+            setContentView(R.layout.activity_running_with_spotify);
+            Button buttonOne = (Button) findViewById(R.id.play);
+            buttonOne.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+                    //Intent intent = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
+                    if(isAppInstalled("com.spotify.music")) {
+                        Intent intent=new Intent("com.spotify.mobile.android.ui.widget.PLAY");
+                        intent.setPackage("com.spotify.music");
+                        sendBroadcast(intent);
+//                    System.out.println("lizards");
+//                    intent.setData(Uri.parse("spotify:user:spotify:playlist:37i9dQZF1DX1gcrZ1xC96D"));
+                    }else{
+                        Intent intent=new Intent("com.spotify.mobile.android.ui.widget.NEXT");
+                        intent.setPackage("com.spotify.music");
+                        sendBroadcast(intent);
+//                    intent.setData(Uri.parse("market://details?id=com.spotify.music&hl=en"));
+                    }
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+                }
+            });
+            Button buttonTwo = (Button) findViewById(R.id.next);
+            buttonTwo.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+
+                }
+            });
+            Button buttonThree = (Button) findViewById(R.id.previous);
+            buttonThree.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+
+                }
+            });
+        }else{
+            setContentView(R.layout.activity_running);
+        }
+        Button buttonFour = (Button) findViewById(R.id.button4);
+
         points = new ArrayList<LatLng>();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -95,7 +134,9 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
             @Override
             public void onClick(View v) {
                 if(WORKOUT_STARTED){
-                    WORKOUT_STARTED=false; stopPedometer();
+                    RunHistory.noHistory=false;
+                    WORKOUT_STARTED=false;
+                    stopPedometer();
                     ContentValues values= new ContentValues();
                     Calendar c = Calendar.getInstance();
                     SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
@@ -122,6 +163,15 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
             }
         });
 
+    }
+    protected boolean isAppInstalled(String packageName) {
+        Intent mIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+        if (mIntent != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 //    private void getRoute(){
 //        DateTime now = new DateTime();

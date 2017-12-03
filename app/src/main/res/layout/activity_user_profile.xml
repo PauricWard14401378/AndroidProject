@@ -107,6 +107,7 @@
     <Button
         android:id="@+id/send"
         android:layout_width="fill_parent"
+        android:background="@drawable/round_button"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

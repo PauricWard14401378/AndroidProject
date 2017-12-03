@@ -96,8 +96,6 @@ public class RunHistory extends Fragment {
         //String[] runHistory=new String[2];
         ArrayList<String> runHistory=new ArrayList<String>();
         if(c.getCount()!=0){
-
-            noHistory=false;
             c.moveToFirst();
             int index=Integer.parseInt(c.getString(0))-1;
             String date=c.getString(1);
