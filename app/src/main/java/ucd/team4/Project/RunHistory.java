@@ -2,6 +2,7 @@ package ucd.team4.Project;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -52,8 +53,10 @@ public class RunHistory extends Fragment {
         if (id == R.id.clear_history) {
             MainActivity.db.onUpgrade(MainActivity.dbWritable, 0, 1);
             noHistory=true;
+            getActivity().finish();
             Intent intent = new Intent(getActivity(), RunHistoryActivity.class);
             startActivity(intent);
+            new CreateDatabaseTask().execute("");
             return true;
         }
 
@@ -137,7 +140,27 @@ public class RunHistory extends Fragment {
 
 
     }
+    public static class CreateDatabaseTask extends AsyncTask<String, Void, String> {
+        protected  void onPreExecute(){
+        }
+
+        protected String doInBackground(String... s){
+            System.out.println("here3");
+            MainActivity.dbWritable=MainActivity.db.getWritableDatabase();
+            MainActivity.dbReadable=MainActivity.db.getReadableDatabase();
+            // db.onUpgrade(dbWritable, 0,1);
+            return "";
+        }
+        protected  void onProgressUpdate(){
+
+        }
+        protected void onPostExecute(){
+            System.out.println("created database");
+        }
+
+    }
 
 
 
 }
+

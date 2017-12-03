@@ -97,6 +97,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         }else{
             setContentView(R.layout.activity_running);
         }
+
         Button buttonFour = (Button) findViewById(R.id.button4);
 
         points = new ArrayList<LatLng>();
@@ -124,6 +125,8 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         alertDialogBuilder.setNegativeButton("See previous runs", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getApplicationContext(), RunHistoryActivity.class);
+                startActivity(intent);
                 Toast.makeText(getApplicationContext(),"runs",Toast.LENGTH_SHORT).show();
             }
         });
@@ -135,6 +138,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         timer = (Chronometer) findViewById(R.id.chronometer2);
 
         distanceTravelled = (TextView) findViewById(R.id.distanceTravelled);
+        distanceTravelled.setText(String.format("%.2f", totalDistance)+" Km");
         workoutStarted = (Button) findViewById(R.id.button1);
         workoutStarted.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,8 +194,8 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                             null
                     );
                     if (c.moveToFirst()) {
-                        System.out.println(c.getString(3).substring(6,10));
-                        int age=Calendar.getInstance().get(Calendar.YEAR)-Integer.parseInt(c.getString(3).substring(6,10));
+                        System.out.println(c.getString(3).substring(c.getString(3).length()-4,c.getString(3).length()));
+                        int age=Calendar.getInstance().get(Calendar.YEAR)-Integer.parseInt(c.getString(3).substring(c.getString(3).length()-4,c.getString(3).length()));
                         System.out.println("yayaya"+age);
                         //double t=Double.parseDouble(time));
                         System.out.println("double"+doubleTime);
@@ -201,6 +205,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                                 Integer.parseInt(c.getString(4)),
                                 Integer.parseInt(c.getString(5)),
                                 doubleTime, totalDistance));
+                        System.out.println("ya"+ calories);
                     }
 
 
@@ -218,14 +223,16 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
                     System.out.println("datered"+done);
 
                     workoutStarted.setText("Start Workout");
+
                 }
                 else{
                     WORKOUT_STARTED=true;
+                    totalDistance=0.0;
                     workoutStarted.setText("Stop workout");
                     distanceTravelled.setText(String.format("%.2f", totalDistance)+" Km");
                     timer.setBase(SystemClock.elapsedRealtime());
                     timer.start();
-                    timer.setFormat("Time - %s");
+                    timer.setFormat("%s");
                     startPedometer();
                     workoutStarted.setText("Stop workout");
                 }
@@ -472,6 +479,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         double RMR;
         double MET = 2;
         double mph = distance / minutes / 1.60934 * 60;
+        System.out.println(mph);
         if(mph>2 && mph <=4)
             MET = 4;
         else if(mph <= 4.5)
@@ -499,7 +507,7 @@ public class Running extends FragmentActivity implements OnMapReadyCallback, Loc
         }
         double corrected_MET = MET * (3.5 / (1000 * (RMR / (1440 * 5))));
         double calories_burned = 1000 * (RMR / (1440 * 5))/corrected_MET;
-        return (calories_burned * minutes / 144);
+        return ((calories_burned*minutes*12) / 1440);
     }
 
 

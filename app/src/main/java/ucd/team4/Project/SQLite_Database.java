@@ -25,7 +25,7 @@ public class SQLite_Database extends SQLiteOpenHelper {
                 "calories INTEGER, "+
                 "steps INTEGER, "+
                 "duration DOUBLE)";
-        String CREATE_USER_TABLE = "CREATE TABLE userProfile ( " +
+        String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS userProfile ( " +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, " +
                 "gender TEXT," +
@@ -40,7 +40,6 @@ public class SQLite_Database extends SQLiteOpenHelper {
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         db.execSQL("DROP TABLE IF EXISTS " + "runHistory");
-        db.execSQL("DROP TABLE IF EXISTS " + "userProfile");
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion){
