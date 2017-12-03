@@ -10,6 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 public class RunHistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_run_history);
+        if(RunHistory.noHistory==false) {
+            setContentView(R.layout.activity_run_history);
+        }else{
+            setContentView(R.layout.activity_no_run_history);
+        }
     }
 }

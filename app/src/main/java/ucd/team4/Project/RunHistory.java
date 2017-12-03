@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class RunHistory extends Fragment {
 
-    boolean yea=false;
+    public static boolean noHistory=true;
     private ArrayAdapter<String> mForecastAdapter;
 
     public RunHistory() {
@@ -64,7 +64,7 @@ public class RunHistory extends Fragment {
 
 
 
-        System.out.println("here2"+yea);
+        //System.out.println("here2"+yea);
 //        ContentValues values= new ContentValues();
 //
 //        values.put("date", "08/04/2017");
@@ -97,7 +97,7 @@ public class RunHistory extends Fragment {
         ArrayList<String> runHistory=new ArrayList<String>();
         if(c.getCount()!=0){
 
-            //TextView noHistory=(TextView) findViewById(R.id.noHistory);
+            noHistory=false;
             c.moveToFirst();
             int index=Integer.parseInt(c.getString(0))-1;
             String date=c.getString(1);
